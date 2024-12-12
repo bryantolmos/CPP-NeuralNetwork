@@ -1,6 +1,5 @@
 #include <iostream>
 #include <stdexcept>
-#include <random>
 #include <cmath>
 
 class matrix {
@@ -11,6 +10,10 @@ public:
 
     // constructor
     matrix(int r, int c) : rows(r), columns(c) {
+        if(r <= 0 || c <= 0){
+            throw std::invalid_argument("\nMatrix dimensions must be positive!\n");
+        }
+
         data = new double*[rows];
         for (int i = 0; i < rows; i++) {
             data[i] = new double[columns];
@@ -100,7 +103,7 @@ void print(const matrix& A) {
         for (int j = 0; j < A.columns; j++) {
             std::cout << " " << A.data[i][j] << " ";
         }
-        std::cout << "|" << std::endl;
+        std::cout << "|\n";
     }
 }
 
@@ -110,15 +113,26 @@ matrix multiply(const matrix& A, const matrix& B) {
         throw std::invalid_argument("\nMatrix dimensions do not match for multiplication!\n");
     }
 
-    matrix z(A.rows, B.columns);
+    matrix result(A.rows, B.columns);
+
     for (int i = 0; i < A.rows; i++) {
         for (int j = 0; j < B.columns; j++) {
             for (int k = 0; k < A.columns; k++) {
-                z[i][j] += A[i][k] * B[k][j];
+                result[i][j] += A[i][k] * B[k][j];
             }
         }
     }
-    return z;
+    return result;
+}
+
+matrix multiplyScalar(const matrix& A, double scalar){
+    matrix result(A.rows, A.columns);
+    for (int i = 0; i < A.rows; i++){
+        for (int j = 0; j < A.columns; j++){
+            result[i][j] = A[i][j] * scalar;
+        }
+    }
+    return result;
 }
 
 // matrix addition
@@ -127,11 +141,21 @@ matrix add(const matrix& A, const matrix& B) {
         throw std::invalid_argument("\nMatrix dimensions do not match for addition!\n");
     }
 
-    matrix z(A.rows, B.columns);
+    matrix result(A.rows, B.columns);
     for (int i = 0; i < A.rows; i++) {
         for (int j = 0; j < B.columns; j++) {
-            z[i][j] = A[i][j] + B[i][j];
+            result[i][j] = A[i][j] + B[i][j];
         }
     }
-    return z;
+    return result;
+}
+
+matrix transpose(const matrix& A) {
+    matrix result(A.columns, A.rows);
+    for (int i = 0; i < A.rows; i++) {
+        for (int j = 0; j < A.columns; j++) {
+            result[j][i] = A[i][j];
+        }
+    }
+    return result;
 }
